@@ -3,17 +3,17 @@
 
 int main(int argc, char *argv[]){
     int i = 1;
-    char spec[3] = "%s ";
-    char specEnd[4] = "%s\n";
-    if ((argc > 1) && (argv[1][0] == '-') && (strlen(argv[0]) == 2)){
+    char *spec = "%s ";
+    char *specEnd = "%s\n";
+    if ((argc > 1) && (argv[1][0] == '-') && (strlen(argv[1]) == 2)){
         switch (argv[1][1]){
             case 'n':
                 i++;
-                specEnd[3] = '\0';
+                specEnd = "%s\n";
                 break;
             case 's':
                 i++;
-                spec[2] = '\0';
+                spec = "%s";
                 break;
         }
     }
