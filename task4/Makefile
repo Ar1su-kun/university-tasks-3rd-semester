@@ -1,7 +1,11 @@
 SOURCES = $(wildcard *.c)
 TARGETS = $(SOURCES:.c=)
 %: %.c
-	gcc $< -Wall -g -fsanitize=address -o $@
+	gcc $< -Wall -o $@
+
+
+
+
 
 clean:
 	rm -f $(TARGETS)

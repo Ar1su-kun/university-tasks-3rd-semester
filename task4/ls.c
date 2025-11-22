@@ -8,13 +8,14 @@
 #include<string.h>
 #include<stdlib.h>
 
-void output(int isR, int isG, int isL, const char *path);
+void output(int isR, int isG, int isL, int isA, const char *path);
 void longList(int isG, const char *path);
 
 int main(int argc, char* argv[]){
     int isR = 0;
     int isG = 0;
     int isL = 0;
+    int isA = 0;
 
     int i = 1;
     if ((argc > 1) && (argv[1][0] == '-') && (strlen(argv[1]) >= 2)){
@@ -22,23 +23,24 @@ int main(int argc, char* argv[]){
             isR = (argv[1][j] == 'R') ? 1 : isR;
             isL = (argv[1][j] == 'l') ? 1 : isL;
             isG = (argv[1][j] == 'g') ? 1 : isG;
-            if (!(isR || isL || isG)){
-                fprintf(stderr, "Error: unknown argument %s", argv[1]);
+            isA = (argv[1][j] == 'a') ? 1 : isA;
+            if (!(isR || isL || isG || isA)){
+                fprintf(stderr, "Error: unknown argument %s\n", argv[1]);
                 exit(-1);
             }
         }
         i++;
     }
     if (argc == i){
-        output(isR, isG, isL, ".");
+        output(isR, isG, isL, isA, ".");
     }
     for(; i < argc; i++){
-        output(isR, isG, isL, argv[i]);
+        output(isR, isG, isL, isA, argv[i]);
     }
 }
 
 
-void output(int isR, int isG, int isL, const char *path){
+void output(int isR, int isG, int isL, int isA, const char *path){
     
     DIR *dir;
     struct dirent *entry;
@@ -50,7 +52,7 @@ void output(int isR, int isG, int isL, const char *path){
     }
     
     while ((entry = readdir(dir)) != NULL){
-        if (entry->d_name[0] != '.'){
+        if (isA || entry->d_name[0] != '.'){
             if (isG || isL){
                 char newpath[PATH_MAX];
                 snprintf(newpath, sizeof(newpath), "%s/%s", path, entry->d_name);
@@ -78,7 +80,7 @@ void output(int isR, int isG, int isL, const char *path){
                 char newpath[PATH_MAX];
                 snprintf(newpath, sizeof(newpath), "%s/%s", path, entry->d_name);
                 printf("%s:\n", newpath);
-                output(isR, isG, isL, newpath);
+                output(isR, isG, isL, isA, newpath);
             }
         }
         if (closedir(dir) == -1){
@@ -140,5 +142,4 @@ void longList(int isG, const char *path){
     printf ("%d, %d", major(statv.st_rdev), minor(statv.st_rdev) );
     else
         printf("%ld\t", statv.st_size);
-
 }
