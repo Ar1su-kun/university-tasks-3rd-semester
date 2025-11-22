@@ -3,13 +3,18 @@
 #include<sys/types.h>
 #include<sys/stat.h>
 #include<unistd.h>
+#include<string.h>
+
 int main(int argc, char *argv[]){
     char buf[1024];
     ssize_t n;
     struct stat s;
     if (argc > 3){
         fprintf(stderr, "Usage: cp file_path new_file_path\n");
-        printf("%d\n", argc);
+        return -1;
+    }
+    if (strcmp(argv[1], argv[2]) == 0){
+        fprintf(stderr, "Error: '%s' and '%s' are the same file\n", argv[1], argv[2]);
         return -1;
     }
     int fd1, fd2;
