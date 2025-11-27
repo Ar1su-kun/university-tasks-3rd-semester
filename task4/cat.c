@@ -27,12 +27,12 @@ int main(int argc, char *argv[]){
             return -1;
         }
         if (isN && count == 1)
-            printf("\t%d  ", count);
+            printf("%6.d  ", count);
         while ((n = read(fd, &ch, 1)) > 0){
             if (isN){
                 if (isNext){
                     isNext = 0;
-                    printf("\n\t%d  ", count);
+                    printf("\n%6.d  ", count);
                 }
                 if (ch == '\n'){
                     count++;
