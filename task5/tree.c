@@ -26,22 +26,28 @@ tree make_cmd(){
     return new_cmd;    
 }
 
-int get_pipe_depth(tree t) {
-        int depth = 1;
-        while (t != NULL && t->pipe != NULL) {
-            depth++;
-            t = t->pipe;
-        }
-        return depth;
-    }
-
 int get_max_pipe_depth(tree t) {
-    if (t == NULL) {
-        return 0;
+    if (t == NULL) return 0;
+    
+    int max_depth = 0;
+    tree current = t;
+    
+    while (current != NULL) {
+        int depth = 1;
+        tree pipe_chain = current;
+        while (pipe_chain->pipe != NULL) {
+            depth++;
+            pipe_chain = pipe_chain->pipe;
+        }
+        
+        if (depth > max_depth) {
+            max_depth = depth;
+        }
+        
+        current = current->next;
     }
-    int pipe_depth = get_pipe_depth(t);
-    int next_depth = get_max_pipe_depth(t->next);    
-    return (pipe_depth > next_depth) ? pipe_depth : next_depth;
+    
+    return max_depth;
 }
 
 void add_arg(tree cmd, char *arg) {
@@ -93,7 +99,6 @@ void make_shift(int n){
     while(n--)
         putc(' ', stderr);
 }
-
 
 void print_argv(char **p, int shift){
     char **q=p;
@@ -150,8 +155,8 @@ void print_tree(tree t, int shift){
 }
 
 int getword(char** word, int *i, list lst){
-    (*i)++;
-    if (*i < lst.size) {
+    if ((*i) + 1 < lst.size){
+        (*i)++;
         *word = lst.data[*i];
         return 0;
     }
@@ -164,14 +169,13 @@ tree build_tree(list lst){
     typedef enum {Begin, Conv, Conv1, In, In1, Out, Out1, Backgrnd, End} vertex;
     int i = 0;
     char *word;
-    tree beg_cmd, cur_cmd, prev_cmd;
+    tree beg_cmd, cur_cmd, first_in_chain;
 
     vertex V = Begin;
 
     if (lst.size == 0) {
         return NULL;
     }
-
 
     while(1)
         switch(V){
@@ -184,8 +188,8 @@ tree build_tree(list lst){
                 }
                 
                 beg_cmd = cur_cmd = make_cmd();
+                first_in_chain = cur_cmd;
                 add_arg(cur_cmd, word);
-                prev_cmd = cur_cmd;
                 
                 if (getword(&word, &i, lst)) {
                     V = End;
@@ -220,59 +224,32 @@ tree build_tree(list lst){
                     cur_cmd->append = 1;
                     V = Out;
                 }
-                else if (strcmp(word, ";") == 0) {
+                else if (strcmp(word, ";") == 0 || strcmp(word, "||") == 0 || strcmp(word, "&&") == 0) {
+                    char *op = word;
+                    
                     if (i >= lst.size) {
                         V = End;
                         break;
                     }
+                    
                     getword(&word, &i, lst);
+                    if (word == NULL) error();
+                    
                     tree next_cmd = make_cmd();
                     add_arg(next_cmd, word);
                     
-                    cur_cmd->next = next_cmd;
-                    cur_cmd->type = NXT; 
-                    prev_cmd = cur_cmd;
+                    first_in_chain->next = next_cmd;
+                    
+                    if (strcmp(op, ";") == 0) {
+                        first_in_chain->type = NXT;
+                    } else if (strcmp(op, "||") == 0) {
+                        first_in_chain->type = OR;
+                    } else if (strcmp(op, "&&") == 0) {
+                        first_in_chain->type = AND;
+                    }
+                    
                     cur_cmd = next_cmd;
-                    
-                    if (getword(&word, &i, lst)) {
-                        V = End;
-                    } else {
-                        V = Conv;
-                    }
-                }
-                else if (strcmp(word, "||") == 0) {
-                    if (i >= lst.size) {
-                        V = End;
-                        break;
-                    }
-                    getword(&word, &i, lst);
-                    tree next_cmd = make_cmd();
-                    add_arg(next_cmd, word);
-                    
-                    cur_cmd->next = next_cmd;
-                    cur_cmd->type = OR;
-                    prev_cmd = cur_cmd;
-                    cur_cmd = next_cmd;
-                    
-                    if (getword(&word, &i, lst)) {
-                        V = End;
-                    } else {
-                        V = Conv;
-                    }
-                }
-                else if (strcmp(word, "&&") == 0) {
-                    if (i >= lst.size) {
-                        V = End;
-                        break;
-                    }
-                    getword(&word, &i, lst);
-                    tree next_cmd = make_cmd();
-                    add_arg(next_cmd, word);
-                    
-                    cur_cmd->next = next_cmd;
-                    cur_cmd->type = AND;
-                    prev_cmd = cur_cmd;
-                    cur_cmd = next_cmd;
+                    first_in_chain = cur_cmd;
                     
                     if (getword(&word, &i, lst)) {
                         V = End;
@@ -281,11 +258,11 @@ tree build_tree(list lst){
                     }
                 }
                 else if (strcmp(word, "&") == 0) {
-                cur_cmd->backgrnd = 1;
-                if (getword(&word, &i, lst))
-                    V = End;
-                else 
-                    V = Conv;
+                    first_in_chain->backgrnd = 1;
+                    if (getword(&word, &i, lst))
+                        V = End;
+                    else 
+                        V = Conv;
                 }
                 else {
                     add_arg(cur_cmd, word);
@@ -299,11 +276,11 @@ tree build_tree(list lst){
                     break;
             case Conv1:
                 if (word == NULL) error();
-                prev_cmd = cur_cmd;
-                cur_cmd = make_cmd();
-                add_arg(cur_cmd, word);
-                prev_cmd->pipe = cur_cmd;
-                prev_cmd = cur_cmd;
+                tree pipe_cmd = make_cmd();
+                add_arg(pipe_cmd, word);
+                
+                cur_cmd->pipe = pipe_cmd;
+                cur_cmd = pipe_cmd;
                 
                 if (getword(&word, &i, lst)) {
                     V = End;
@@ -342,7 +319,7 @@ tree build_tree(list lst){
                 break;
                 
             case Backgrnd:
-                cur_cmd->backgrnd = 1;
+                first_in_chain->backgrnd = 1;
                 if (word == NULL)
                     V = End;
                 else
@@ -355,7 +332,6 @@ tree build_tree(list lst){
         }
 }
 
-
 int inv(){
     printf("%s", "\x1b[32m");
     char s[100];
@@ -366,7 +342,6 @@ int inv(){
     printf(":%s$ ", s);
     return 1;
 }
-
 
 int main(){
     list lst;
