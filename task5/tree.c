@@ -26,6 +26,24 @@ tree make_cmd(){
     return new_cmd;    
 }
 
+int get_pipe_depth(tree t) {
+        int depth = 1;
+        while (t != NULL && t->pipe != NULL) {
+            depth++;
+            t = t->pipe;
+        }
+        return depth;
+    }
+
+int get_max_pipe_depth(tree t) {
+    if (t == NULL) {
+        return 0;
+    }
+    int pipe_depth = get_pipe_depth(t);
+    int next_depth = get_max_pipe_depth(t->next);    
+    return (pipe_depth > next_depth) ? pipe_depth : next_depth;
+}
+
 void add_arg(tree cmd, char *arg) {
     if (cmd == NULL || arg == NULL) {
         return;
@@ -75,6 +93,7 @@ void make_shift(int n){
     while(n--)
         putc(' ', stderr);
 }
+
 
 void print_argv(char **p, int shift){
     char **q=p;
@@ -280,6 +299,7 @@ tree build_tree(list lst){
                     break;
             case Conv1:
                 if (word == NULL) error();
+                prev_cmd = cur_cmd;
                 cur_cmd = make_cmd();
                 add_arg(cur_cmd, word);
                 prev_cmd->pipe = cur_cmd;
@@ -355,6 +375,7 @@ int main(){
         insertVariables(&lst);
         tree tr = build_tree(lst);
         print_tree(tr, 4);
+        printf("Max pipe depth: %d\n", get_max_pipe_depth(tr));
         printList(&lst);
         clearList(&lst);
         clear_tree(tr);
