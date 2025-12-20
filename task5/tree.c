@@ -5,7 +5,6 @@ jmp_buf errorHndlr;
 
 void error(void){
     perror("Error!");
-    //while (getchar() != '\n');
     longjmp(errorHndlr, 1);
 }
 
@@ -22,7 +21,7 @@ tree make_cmd(){
     new_cmd->backgrnd = 0;
     new_cmd->pipe = NULL;
     new_cmd->next = NULL;
-    new_cmd->type = NXT; // Default type
+    new_cmd->type = NXT;
     
     return new_cmd;    
 }
@@ -203,7 +202,6 @@ tree build_tree(list lst){
                     V = Out;
                 }
                 else if (strcmp(word, ";") == 0) {
-                    // Handle sequential execution
                     if (i >= lst.size) {
                         V = End;
                         break;
@@ -213,7 +211,7 @@ tree build_tree(list lst){
                     add_arg(next_cmd, word);
                     
                     cur_cmd->next = next_cmd;
-                    cur_cmd->type = NXT; // Set type of the current command
+                    cur_cmd->type = NXT; 
                     prev_cmd = cur_cmd;
                     cur_cmd = next_cmd;
                     
@@ -224,7 +222,6 @@ tree build_tree(list lst){
                     }
                 }
                 else if (strcmp(word, "||") == 0) {
-                    // Handle logical OR
                     if (i >= lst.size) {
                         V = End;
                         break;
@@ -234,7 +231,7 @@ tree build_tree(list lst){
                     add_arg(next_cmd, word);
                     
                     cur_cmd->next = next_cmd;
-                    cur_cmd->type = OR; // Set type of the current command
+                    cur_cmd->type = OR;
                     prev_cmd = cur_cmd;
                     cur_cmd = next_cmd;
                     
@@ -245,7 +242,6 @@ tree build_tree(list lst){
                     }
                 }
                 else if (strcmp(word, "&&") == 0) {
-                    // Handle logical AND
                     if (i >= lst.size) {
                         V = End;
                         break;
@@ -255,7 +251,7 @@ tree build_tree(list lst){
                     add_arg(next_cmd, word);
                     
                     cur_cmd->next = next_cmd;
-                    cur_cmd->type = AND; // Set type of the current command
+                    cur_cmd->type = AND;
                     prev_cmd = cur_cmd;
                     cur_cmd = next_cmd;
                     
@@ -341,11 +337,11 @@ tree build_tree(list lst){
 
 
 int inv(){
-    printf("%s", "\x1b[32m"); /*здесь изменяется цвет на зеленый */
-    char s[100]; /* ограничение: имя хоста и текущей директории не должно быть слишком длинным! */
+    printf("%s", "\x1b[32m");
+    char s[100];
     gethostname(s, 100);
     printf("%s@%s", getenv("USER"), s);
-    printf("%s", "\x1B[37m"); /* здесь изменяется цвет на серый */
+    printf("%s", "\x1B[37m"); 
     getcwd(s, 100);
     printf(":%s$ ", s);
     return 1;
