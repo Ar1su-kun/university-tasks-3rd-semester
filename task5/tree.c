@@ -165,10 +165,9 @@ int getword(char** word, int *i, list lst){
 }
 
 tree build_tree(list lst){
-    setjmp(errorHndlr);
     typedef enum {Begin, Conv, Conv1, In, In1, Out, Out1, Backgrnd, End} vertex;
     int i = 0;
-    char *word;
+    char *word = NULL;
     tree beg_cmd, cur_cmd, first_in_chain;
 
     vertex V = Begin;
@@ -198,6 +197,10 @@ tree build_tree(list lst){
                 }
                     break;
             case Conv:
+                if (word == NULL){
+                    V = End;
+                    break;
+                }
                 if (strcmp(word, "|") == 0) {
                     if (i >= lst.size)
                         error();
@@ -227,7 +230,7 @@ tree build_tree(list lst){
                 else if (strcmp(word, ";") == 0 || strcmp(word, "||") == 0 || strcmp(word, "&&") == 0) {
                     char *op = word;
                     
-                    if (i >= lst.size) {
+                    if (i >= (lst.size - 1)) {
                         V = End;
                         break;
                     }
@@ -343,17 +346,18 @@ int inv(){
     return 1;
 }
 
-int main(){
-    list lst;
-    initList(&lst);
-    while(inv() && input(&lst)){
-        insertVariables(&lst);
-        tree tr = build_tree(lst);
-        print_tree(tr, 4);
-        //printf("Max pipe depth: %d\n", get_max_pipe_depth(tr));
-        //printList(&lst);
-        clearList(&lst);
-        clear_tree(tr);
-    }
-    return 0;
-}
+// int main(){
+//     setjmp(errorHndlr);
+//     list lst;
+//     initList(&lst);
+//     while(inv() && input(&lst)){
+//         insertVariables(&lst);
+//         tree tr = build_tree(lst);
+//         print_tree(tr, 4);
+//         //printf("Max pipe depth: %d\n", get_max_pipe_depth(tr));
+//         //printList(&lst);
+//         clearList(&lst);
+//         clear_tree(tr);
+//     }
+//     return 0;
+// }

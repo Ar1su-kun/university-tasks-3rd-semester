@@ -135,6 +135,7 @@ void insertVariables(list *lst){
     shrinkList(&temp);
     clearList(lst);
     *lst = temp;
+    clearBuffer(&buf);
 }
 
 

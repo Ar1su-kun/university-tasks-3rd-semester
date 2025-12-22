@@ -1,21 +1,21 @@
 #include "list.h"
 #include "input.h"
 #include "tree.h"
-
-void output(list lst){
-    insertVariables(&lst);
-    printList(&lst);
-    clearList(&lst);
-}
+#include "exec.h"
 
 int main(){
-    list lst;
-    buffer buf;
-    initList(&lst);
-    initBuffer(&buf);
-
-    while(input(&lst))
-        output(lst);
-
+    if (setjmp(errorHndlr) == 0) {
+        list lst;
+        initList(&lst);
+        while(inv() && input(&lst)){
+            insertVariables(&lst);
+            tree tr = build_tree(lst);
+            
+            execute(tr);
+            
+            clearList(&lst);
+            clear_tree(tr);
+        }
+    }
     return 0;
 }

@@ -1,7 +1,13 @@
+#ifndef TREE_H 
+#define TREE_H 
+
+
 #include "list.h"
 #include <stdlib.h>
 #include <setjmp.h>
 #include <string.h>
+
+extern jmp_buf errorHndlr;
 
 enum type_of_next{
     NXT, AND, OR   // виды связей соседних команд в списке команд
@@ -22,6 +28,8 @@ typedef struct cmd_inf *tree;
 typedef struct cmd_inf node;
 
 void print_tree(tree, int);
+int inv();
 tree build_tree(list);
 void clear_tree(tree);
 
+#endif // TREE_H
