@@ -2,6 +2,7 @@
 #include<string.h>
 #include "input.h"
 #include<limits.h>
+#include <linux/limits.h>
 
 char *varHOME;
 char varSHELL[PATH_MAX];
@@ -100,31 +101,31 @@ void insertVariables(list *lst){
     for (int i = 0; i < lst->size; i++){
         clearBuffer(&buf);
         if((lst->data[i][0] != '$')){
-            for (int j = 0; j < strlen(lst->data[i]); j++){
+            for (int j = 0; j < (int)strlen(lst->data[i]); j++){
                 addSymbol(&buf, lst->data[i][j]);
             }
             addWord(&temp, &buf);
         }
         else if(!strcmp(lst->data[i], "$HOME")){
-            for(int j = 0; j < strlen(varHOME); j++){
+            for(int j = 0; j < (int)strlen(varHOME); j++){
                 addSymbol(&buf, varHOME[j]);
             }
             addWord(&temp, &buf);
         }
         else if(!strcmp(lst->data[i], "$SHELL")){
-            for(int j = 0; j < strlen(varSHELL); j++){
+            for(int j = 0; j < (int)strlen(varSHELL); j++){
                 addSymbol(&buf, varSHELL[j]);
             }
             addWord(&temp, &buf);
         } 
         else if(!strcmp(lst->data[i], "$USER")){
-            for(int j = 0; j < strlen(varUSER); j++){
+            for(int j = 0; j < (int)strlen(varUSER); j++){
                 addSymbol(&buf, varUSER[j]);
             }
             addWord(&temp, &buf);
         }
         else if (!strcmp(lst->data[i], "$EUID")){
-            for(int j = 0; j < strlen(varEUID); j++){
+            for(int j = 0; j < (int)strlen(varEUID); j++){
                 addSymbol(&buf, varEUID[j]);
             }
             addWord(&temp, &buf);

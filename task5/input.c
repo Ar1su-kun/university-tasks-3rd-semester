@@ -62,7 +62,7 @@ void start(){
 
 void specWord1(int prev){
     if (c == ' ' || c == '\t' || inSymSet(c) ||
-        !inSpecSet2(c)&&inSpecSet1(c) || inSpecSet2(c)&&(c!=prev)){
+        (!inSpecSet2(c)&&inSpecSet1(c)) || (inSpecSet2(c)&&(c!=prev))){
 
         addWord(lst, &buf);
         start();

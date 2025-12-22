@@ -69,12 +69,12 @@ Custom implementations for efficient string storage and token management.
 
 ### Compilation
 ```bash
-gcc -o shell_parser main.c input.c tree.c list.c
+make shell
 ```
 
 ### Execution
 ```bash
-./shell_parser
+./shell
 ```
 
 The program will display a prompt and process commands entered interactively.
