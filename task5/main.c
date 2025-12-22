@@ -11,7 +11,11 @@ int main(){
             insertVariables(&lst);
             tree tr = build_tree(lst);
             
-            execute(tr);
+            if(execute(tr)){
+                clearList(&lst);
+                clear_tree(tr);
+                return 0;
+            }
             
             clearList(&lst);
             clear_tree(tr);

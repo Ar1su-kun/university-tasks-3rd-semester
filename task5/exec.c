@@ -168,10 +168,11 @@ int execute_pipe_chain(tree cmd, int input_fd, int is_background) {
     return exit_status;
 }
 
-void execute(tree t) {
-    if (t == NULL) {
-        return;
-    }
+int execute(tree t) {
+    if (t == NULL)
+        return 0;
+    if (strcmp(*t->argv, "exit") == 0)
+        return 1;
     
     tree current = t;
     int last_exit_status = 0;
@@ -198,4 +199,6 @@ void execute(tree t) {
         
         current = current->next;
     }
+
+    return 0;
 }

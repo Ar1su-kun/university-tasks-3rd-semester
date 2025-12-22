@@ -6,7 +6,7 @@
 #include "tree.h"
 
 // Основная функция выполнения дерева команд
-void execute(tree t);
+int execute(tree t);
 
 #endif
 // [file content end]
