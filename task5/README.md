@@ -69,7 +69,7 @@ Custom implementations for efficient string storage and token management.
 
 ### Compilation
 ```bash
-make shell
+make
 ```
 
 ### Execution
