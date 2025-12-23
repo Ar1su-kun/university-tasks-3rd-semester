@@ -1,6 +1,5 @@
 #include "input.h"
 
-
 list *lst;
 buffer buf;
 int c;

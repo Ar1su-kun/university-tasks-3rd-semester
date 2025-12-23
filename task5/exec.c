@@ -41,10 +41,6 @@ int execute_command(tree cmd, int input_fd, int output_fd, int is_background) {
         return 0;
     }
 
-    if (strcmp(cmd->argv[0], "exit") == 0) {
-        exit(0);
-    }
-
     pid_t pid = fork();
     if (pid < 0) {
         exec_error("fork failed");
@@ -128,9 +124,8 @@ int execute_command(tree cmd, int input_fd, int output_fd, int is_background) {
 }
 
 int execute_pipe_chain(tree cmd, int input_fd, int is_background) {
-    if (cmd == NULL) {
+    if (cmd == NULL)
         return 0;
-    }
 
     int exit_status = 0;
     tree current = cmd;
@@ -182,20 +177,17 @@ int execute(tree t) {
         
         if (current != t) {
             tree prev_cmd = t;
-            while (prev_cmd->next != current) {
+            while (prev_cmd->next != current)
                 prev_cmd = prev_cmd->next;
-            }
             
-            if (prev_cmd->type == AND) {
+            if (prev_cmd->type == AND)
                 should_execute = (last_exit_status == 0);
-            } else if (prev_cmd->type == OR) {
+            else if (prev_cmd->type == OR)
                 should_execute = (last_exit_status != 0);
-            }
         }
         
-        if (should_execute) {
+        if (should_execute)
             last_exit_status = execute_pipe_chain(current, STDIN_FILENO, current->backgrnd);
-        }
         
         current = current->next;
     }

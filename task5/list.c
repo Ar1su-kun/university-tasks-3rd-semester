@@ -137,14 +137,3 @@ void insertVariables(list *lst){
     *lst = temp;
     clearBuffer(&buf);
 }
-
-
-
-
-
-
-
-
-
-
-

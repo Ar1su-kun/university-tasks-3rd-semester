@@ -17,7 +17,8 @@ typedef struct{
     char *data;
     int size;
     int capacity;
-} buffer;   
+} buffer;
+
 void initList(list *lst);
 void initBuffer(buffer *buf);
 void clearList(list *lst);

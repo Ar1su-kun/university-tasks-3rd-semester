@@ -26,30 +26,6 @@ tree make_cmd(){
     return new_cmd;    
 }
 
-// int get_max_pipe_depth(tree t) {
-//     if (t == NULL) return 0;
-    
-//     int max_depth = 0;
-//     tree current = t;
-    
-//     while (current != NULL) {
-//         int depth = 1;
-//         tree pipe_chain = current;
-//         while (pipe_chain->pipe != NULL) {
-//             depth++;
-//             pipe_chain = pipe_chain->pipe;
-//         }
-        
-//         if (depth > max_depth) {
-//             max_depth = depth;
-//         }
-        
-//         current = current->next;
-//     }
-    
-//     return max_depth;
-// }
-
 void add_arg(tree cmd, char *arg) {
     if (cmd == NULL || arg == NULL) {
         return;

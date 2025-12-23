@@ -5,6 +5,7 @@
 
 int main(){
     if (setjmp(errorHndlr) == 0) {
+        
         list lst;
         initList(&lst);
         while(inv() && input(&lst)){

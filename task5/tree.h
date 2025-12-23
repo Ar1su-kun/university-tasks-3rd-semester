@@ -32,4 +32,4 @@ int inv();
 tree build_tree(list);
 void clear_tree(tree);
 
-#endif // TREE_H
+#endif
