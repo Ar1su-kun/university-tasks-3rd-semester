@@ -2,7 +2,7 @@
 
 # Command Shell Parser in C
 
-A command-line shell parser implementation in C that processes user input according to a defined grammar and constructs a parse tree representation of commands, pipelines, and redirections.
+A command-line interactive  shell parser implementation in C that processes user input according to a defined grammar and constructs a parse tree representation of commands, pipelines, redirections and executes them.
 
 ## Features
 
@@ -26,6 +26,14 @@ A command-line shell parser implementation in C that processes user input accord
   - `$USER` – Current username
   - `$EUID` – Effective user ID
 
+- **Command Execution**:
+  - Built-in commands: `cd`, `exit`
+  - External command execution via `execvp`
+  - Pipeline execution with proper file descriptor handling
+  - Input/output redirection with append mode support
+  - Background execution (`&`)
+  - Logical operators (`&&`, `||`) with conditional execution
+
 ## Grammar Definition
 
 The parser follows this EBNF grammar:
@@ -41,10 +49,12 @@ The parser follows this EBNF grammar:
 | File | Description |
 |------|-------------|
 | `main.c` | Program entry point and main loop |
-| `input.c` / `input.h` | Input tokenization and lexical analysis |
+| `exec.c` / `exec.h` | Tree's command execution logic with pipeline handling |
 | `tree.c` / `tree.h` | Parse tree construction and manipulation |
+| `input.c` / `input.h` | Input tokenization and lexical analysis |
 | `list.c` / `list.h` | Dynamic list and buffer utilities |
 | `README.md` | This documentation |
+| `launch.json` | settings for GDB in VScode |
 
 ## Data Structures
 
@@ -72,40 +82,33 @@ Custom implementations for efficient string storage and token management.
 make
 ```
 
+### Leak tests
+```bash
+make test
+```
+
 ### Execution
 ```bash
 ./shell
 ```
 
-The program will display a prompt and process commands entered interactively.
-
 ## Example Usage
+
+**The shell will display a prompt in the format:**
+```
+username@hostname:current_directory$
+```
 
 **Input:**
 ```
 echo "Hello World" | wc -l && ls -la > output.txt &
 ```
 
-**Output:**
-- Parse tree showing the pipeline structure
-- Tokenized command list after variable expansion
-- Tree visualization with indentation showing hierarchy
-
 ## Error Handling
 
 The parser uses `setjmp`/`longjmp` for error recovery, providing robust handling of malformed input and memory allocation failures.
 
 ## Limitations
-
-- This is a parser only – no actual command execution is performed
 - Supports a subset of shell syntax (not a full POSIX shell)
 - Designed primarily for educational purposes in parsing techniques
-
-## Notes
-
-The implementation demonstrates several important concepts:
-- Recursive descent parsing techniques
-- Abstract syntax tree construction
-- Memory management in C
-- Lexical analysis with state machines
-- Environment variable expansion
+- Has a single memory leak when user enters invalid command (It doesn't accumulate)

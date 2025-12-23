@@ -4,8 +4,6 @@ TARGETS = $(SOURCES:.c=.o)
 default: shell clean
 shell: main.o list.o input.o tree.o exec.o
 	gcc $^ -o $@ -g -Wall -Wextra -O0
-exec: list.o input.o tree.o exec.o
-	gcc $^ -o $@ -g -Wall -Wextra -O0
 %.o: %.c %.h
 	gcc -c $< -o $@ -g -Wall -Wextra -O0
 clean:
